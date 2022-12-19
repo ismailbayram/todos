@@ -1,4 +1,4 @@
-package tests
+package users
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -18,7 +18,7 @@ import (
 //	assert.True(t, user.IsAdmin)
 //}
 
-func (s *ToDoTestSuite) TestDeactivateUser() {
+func (s *tests.ToDoTestSuite) TestDeactivateUser() {
 	assert.True(s.T(), true)
 }
 
