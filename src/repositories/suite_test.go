@@ -17,6 +17,8 @@ func (s *ToDoTestSuite) SetupSuite() {
 	dsn = fmt.Sprintf("%s/%s", dsn, dbName)
 	s.db = database.New(dsn)
 	s.db.Migrate()
+	db, _ := s.db.DBConn.DB()
+	_ = db.Close()
 }
 
 func (s *ToDoTestSuite) TearDownSuite() {
@@ -32,18 +34,13 @@ func (s *ToDoTestSuite) TearDownSuite() {
 }
 
 func (s *ToDoTestSuite) SetupTest() {
-	s.tx = s.db.DBConn.Begin()
-	result := s.tx.SavePoint("sp")
-	if result.Error != nil {
-		panic(result.Error)
-	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "postgres", "123456", "localhost", "5432", "test_todos")
+	s.db = database.New(dsn)
 }
 
 func (s *ToDoTestSuite) TearDownTest() {
-	result := s.tx.RollbackTo("sp")
-	if result.Error != nil {
-		panic(result.Error)
-	}
+	db, _ := s.db.DBConn.DB()
+	_ = db.Close()
 }
 
 func TestTestSuite(t *testing.T) {

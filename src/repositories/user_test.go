@@ -20,6 +20,12 @@ func (s *ToDoTestSuite) TestCreateUser() {
 	assert.Equal(s.T(), hashedPassword, user.Password)
 	assert.True(s.T(), user.IsActive)
 	assert.True(s.T(), user.IsAdmin)
+
+	user, err = ur.CreateUser("hilal", password, true)
+
+	var count int64
+	_ = s.db.DBConn.Table("users").Count(&count)
+	assert.Equal(s.T(), int64(2), count)
 }
 
 func (s *ToDoTestSuite) TestDeactivateUser() {
