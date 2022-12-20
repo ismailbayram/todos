@@ -1,4 +1,4 @@
-package users
+package models
 
 import (
 	"crypto/sha256"
@@ -16,7 +16,7 @@ type User struct {
 	IsAdmin   bool      `gorm:"default:false;not null"`
 }
 
-func CreateUser(db *gorm.DB, username string, password string, isAdmin bool) *User {
+func CreateUser(db *gorm.DB, username string, password string, isAdmin bool) (*User, error) {
 	h := sha256.New()
 	h.Write([]byte(password))
 	hashedPassword := h.Sum(nil)
@@ -27,6 +27,9 @@ func CreateUser(db *gorm.DB, username string, password string, isAdmin bool) *Us
 		IsAdmin:  isAdmin,
 		IsActive: true,
 	}
-	db.Create(user)
-	return user
+	result := db.Create(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user, nil
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/ismailbayram/todos/apps/users"
+	"github.com/ismailbayram/todos/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -14,5 +14,5 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Database error: %s", err))
 	}
-	db.AutoMigrate(&users.User{})
+	db.AutoMigrate(&models.User{})
 }
