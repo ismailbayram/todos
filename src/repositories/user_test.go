@@ -29,7 +29,14 @@ func (s *ToDoTestSuite) TestCreateUser() {
 }
 
 func (s *ToDoTestSuite) TestDeactivateUser() {
-	assert.True(s.T(), true)
+	ur := NewUserRepository(s.db.DBConn)
+	user, err := ur.CreateUser("ismail", "123456", true)
+	if err != nil {
+		panic(err)
+	}
+	err = ur.DeactivateUser(user)
+	assert.Nil(s.T(), err)
+	assert.False(s.T(), user.IsActive)
 }
 
 //func TestMakeUserAdmin(t *testing.T) {

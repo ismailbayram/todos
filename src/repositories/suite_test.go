@@ -36,9 +36,14 @@ func (s *ToDoTestSuite) TearDownSuite() {
 func (s *ToDoTestSuite) SetupTest() {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "postgres", "123456", "localhost", "5432", "test_todos")
 	s.db = database.New(dsn)
+
+	s.tx = s.db.DBConn.Begin()
+	s.tx.SavePoint("sp")
 }
 
 func (s *ToDoTestSuite) TearDownTest() {
+	s.tx.RollbackTo("sp")
+	s.tx.Commit()
 	db, _ := s.db.DBConn.DB()
 	_ = db.Close()
 }

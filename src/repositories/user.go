@@ -34,3 +34,13 @@ func (r *UserRepository) CreateUser(username string, password string, isAdmin bo
 	}
 	return user, nil
 }
+
+func (r *UserRepository) ActivateUser(user *models.User) {
+	user.IsActive = true
+	r.db.Save(user)
+}
+
+func (r *UserRepository) DeactivateUser(user *models.User) error {
+	user.IsActive = false
+	return r.db.Save(user).Error
+}

@@ -1,18 +1,22 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
+	"github.com/ismailbayram/todos/src/database"
+	"github.com/ismailbayram/todos/src/models"
+	"github.com/ismailbayram/todos/src/repositories"
 )
 
 func main() {
-	password := "123456"
-	h := sha256.New()
-	h.Write([]byte(password))
-	hashedPassword := h.Sum(nil)
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "postgres", "123456", "localhost", "5432", "todos")
+	db := database.New(dsn)
 
-	fmt.Println(hashedPassword)
-	fmt.Println(string(hashedPassword))
-	fmt.Println(hex.EncodeToString(hashedPassword))
+	ur := repositories.NewUserRepository(db.DBConn)
+	//user, _ := ur.CreateUser("ismail", "123456", true)
+	var user models.User
+	db.DBConn.First(&user)
+	//if result.Error != nil {
+	//	panic(result.Error)
+	//}
+	ur.DeactivateUser(&user)
 }
