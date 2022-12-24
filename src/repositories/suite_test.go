@@ -15,7 +15,7 @@ func (s *ToDoTestSuite) SetupSuite() {
 }
 
 func (s *ToDoTestSuite) TearDownSuite() {
-	db, _ := s.db.DBConn.DB()
+	db, _ := s.db.DB()
 	err := db.Close()
 	if err != nil {
 		panic(err)
@@ -25,15 +25,15 @@ func (s *ToDoTestSuite) TearDownSuite() {
 }
 
 func (s *ToDoTestSuite) SetupTest() {
-	s.db = database.New(&s.config.Database)
-	s.tx = s.db.DBConn.Begin()
-	s.tx.SavePoint("sp")
+	db := database.New(&s.config.Database)
+	s.db = db.DBConn.Begin()
+	s.db.SavePoint("sp")
 }
 
 func (s *ToDoTestSuite) TearDownTest() {
-	s.tx.RollbackTo("sp")
-	s.tx.Commit()
-	db, _ := s.db.DBConn.DB()
+	s.db.RollbackTo("sp")
+	s.db.Commit()
+	db, _ := s.db.DB()
 	_ = db.Close()
 }
 
