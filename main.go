@@ -10,13 +10,13 @@ func main() {
 	//db := database.New(dsn)
 	//
 	//ur := repositories.NewUserRepository(db.DBConn)
-	////user, _ := ur.CreateUser("ismail", "123456", true)
+	////user, _ := ur.Create("ismail", "123456", true)
 	//var user models.User
 	//db.DBConn.First(&user)
 	////if result.Error != nil {
 	////	panic(result.Error)
 	////}
-	//ur.DeactivateUser(&user)
+	//ur.Deactivate(&user)
 
 	cfg := config.Init()
 	fmt.Println(cfg.Database.Host)

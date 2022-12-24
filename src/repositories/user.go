@@ -17,7 +17,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) CreateUser(username string, password string, isAdmin bool) (*models.User, error) {
+func (r *UserRepository) Create(username string, password string, isAdmin bool) (*models.User, error) {
 	h := sha256.New()
 	h.Write([]byte(password))
 	hashedPassword := h.Sum(nil)
@@ -35,12 +35,29 @@ func (r *UserRepository) CreateUser(username string, password string, isAdmin bo
 	return user, nil
 }
 
-func (r *UserRepository) ActivateUser(user *models.User) {
-	user.IsActive = true
-	r.db.Save(user)
+func (r *UserRepository) GetByID(id uint) (*models.User, error) {
+	var user models.User
+	result := r.db.Where("id = ?", id).First(&user)
+	return &user, result.Error
 }
 
-func (r *UserRepository) DeactivateUser(user *models.User) error {
+func (r *UserRepository) GetByUsername(username string) (*models.User, error) {
+	var user models.User
+	result := r.db.Where("username = ?", username).First(&user)
+	return &user, result.Error
+}
+
+func (r *UserRepository) Activate(user *models.User) error {
+	user.IsActive = true
+	return r.db.Save(user).Error
+}
+
+func (r *UserRepository) Deactivate(user *models.User) error {
 	user.IsActive = false
+	return r.db.Save(user).Error
+}
+
+func (r *UserRepository) MakeAdmin(user *models.User) error {
+	user.IsAdmin = true
 	return r.db.Save(user).Error
 }
