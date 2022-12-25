@@ -3,6 +3,7 @@ package users
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"github.com/ismailbayram/todos/src/tests"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -11,6 +12,12 @@ import (
 
 type UserTestSuite struct {
 	tests.AppTestSuite
+}
+
+func TestUserTestSuite(t *testing.T) {
+	userTestSuite := new(UserTestSuite)
+	userTestSuite.Models = []interface{}{&User{}}
+	suite.Run(t, userTestSuite)
 }
 
 func (s *UserTestSuite) TestNewUserRepository() {
@@ -108,8 +115,31 @@ func (s *UserTestSuite) TestMakeAdmin() {
 	assert.True(s.T(), user.IsActive)
 }
 
-func TestUserTestSuite(t *testing.T) {
-	userTestSuite := new(UserTestSuite)
-	userTestSuite.Models = []interface{}{&User{}}
-	suite.Run(t, userTestSuite)
+func (s *UserTestSuite) TestCreateToken() {
+	ur := NewUserRepository(s.DB)
+	user, err := ur.Create("token", "123456", true)
+	assert.Nil(s.T(), err)
+	token, err := ur.CreateToken(user, s.Config.SecretKey)
+	assert.Nil(s.T(), err)
+
+	h := sha256.New()
+	h.Write([]byte(fmt.Sprintf("%s%s", "token", s.Config.SecretKey)))
+	expectedToken := hex.EncodeToString(h.Sum(nil))
+	assert.Equal(s.T(), expectedToken, token)
+}
+
+func (s *UserTestSuite) TestGetByToken() {
+	ur := NewUserRepository(s.DB)
+	user, err := ur.Create("token", "123456", true)
+	assert.Nil(s.T(), err)
+	token, err := ur.CreateToken(user, s.Config.SecretKey)
+	assert.Nil(s.T(), err)
+
+	expectedUser, err := ur.GetByToken(token)
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), expectedUser.ID, user.ID)
+
+	expectedUser, err = ur.GetByToken("asdasdasdasd")
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), uint(0), expectedUser.ID)
 }

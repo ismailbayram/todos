@@ -3,6 +3,7 @@ package users
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -59,4 +60,18 @@ func (r *UserRepository) Deactivate(user *User) error {
 func (r *UserRepository) MakeAdmin(user *User) error {
 	user.IsAdmin = true
 	return r.db.Save(user).Error
+}
+
+func (r *UserRepository) CreateToken(user *User, secretKey string) (string, error) {
+	h := sha256.New()
+	h.Write([]byte(fmt.Sprintf("%s%s", "token", secretKey)))
+	token := hex.EncodeToString(h.Sum(nil))
+	user.Token = token
+	return token, r.db.Save(user).Error
+}
+
+func (r *UserRepository) GetByToken(token string) (*User, error) {
+	var user User
+	result := r.db.Where("token = ?", token).First(&user)
+	return &user, result.Error
 }

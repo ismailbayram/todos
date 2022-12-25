@@ -6,7 +6,8 @@ import (
 )
 
 type Configuration struct {
-	Database DatabaseConfiguration
+	SecretKey string
+	Database  DatabaseConfiguration
 }
 
 type DatabaseConfiguration struct {
@@ -33,6 +34,7 @@ func Init() *Configuration {
 
 func getDefaultConfig() *Configuration {
 	return &Configuration{
+		SecretKey: "TOP_SECRET",
 		Database: DatabaseConfiguration{
 			Name:     "todos",
 			Username: "postgres",

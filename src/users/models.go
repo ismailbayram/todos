@@ -12,4 +12,5 @@ type User struct {
 	Password  string    `gorm:"not null"`
 	IsActive  bool      `gorm:"default:true;not null"`
 	IsAdmin   bool      `gorm:"default:false;not null"`
+	Token     string
 }
