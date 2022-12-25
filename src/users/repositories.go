@@ -60,7 +60,3 @@ func (r *UserRepository) MakeAdmin(user *User) error {
 	user.IsAdmin = true
 	return r.db.Save(user).Error
 }
-
-func (r *UserRepository) Migrate() error {
-	return r.db.AutoMigrate(&User{})
-}

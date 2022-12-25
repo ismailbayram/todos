@@ -48,6 +48,10 @@ func (s *UserTestSuite) TestGetByID() {
 	user, err := ur.GetByID(created.ID)
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), created.ID, user.ID)
+
+	user2, err2 := ur.GetByID(12121231132123)
+	assert.NotNil(s.T(), err2)
+	assert.Equal(s.T(), uint(0), user2.ID)
 }
 
 func (s *UserTestSuite) TestGetByUsername() {

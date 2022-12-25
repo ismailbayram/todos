@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"github.com/ismailbayram/todos/config"
+	"github.com/ismailbayram/todos/src/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
