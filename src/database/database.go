@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"github.com/ismailbayram/todos/config"
-	"github.com/ismailbayram/todos/src/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -13,7 +12,7 @@ import (
 )
 
 type Database struct {
-	DBConn *gorm.DB
+	Conn *gorm.DB
 }
 
 func New(cfg *config.DatabaseConfiguration) *Database {
@@ -37,11 +36,11 @@ func New(cfg *config.DatabaseConfiguration) *Database {
 	}
 
 	return &Database{
-		DBConn: db,
+		Conn: db,
 	}
 }
 
-func SetupTestDatabase(cfg config.DatabaseConfiguration) {
+func SetupTestDatabase(cfg config.DatabaseConfiguration, models []interface{}) {
 	dsn := fmt.Sprintf("host=%s  port=%s user=%s password=%s", cfg.Host, cfg.Port, cfg.Username, cfg.Password)
 	dbServer, err := gorm.Open(postgres.Open(dsn))
 	if err != nil {
@@ -51,7 +50,7 @@ func SetupTestDatabase(cfg config.DatabaseConfiguration) {
 
 	dsn = fmt.Sprintf("%s name=test_%s", dsn, cfg.Name)
 	db := New(&cfg)
-	db.Migrate()
+	db.Migrate(models)
 }
 
 func DropTestDatabase(cfg config.DatabaseConfiguration) {
@@ -63,11 +62,11 @@ func DropTestDatabase(cfg config.DatabaseConfiguration) {
 	dbServer.Exec(fmt.Sprintf("DROP DATABASE %s;", cfg.Name))
 }
 
-func (db *Database) Migrate() {
-	err := db.DBConn.AutoMigrate(&models.User{})
+func (db *Database) Migrate(models []interface{}) {
+	err := db.Conn.AutoMigrate(models...)
 	if err != nil {
 		panic(err)
 	}
-	conn, _ := db.DBConn.DB()
+	conn, _ := db.Conn.DB()
 	_ = conn.Close()
 }

@@ -1,9 +1,8 @@
-package repositories
+package users
 
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/ismailbayram/todos/src/models"
 	"gorm.io/gorm"
 )
 
@@ -17,12 +16,12 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Create(username string, password string, isAdmin bool) (*models.User, error) {
+func (r *UserRepository) Create(username string, password string, isAdmin bool) (*User, error) {
 	h := sha256.New()
 	h.Write([]byte(password))
 	hashedPassword := h.Sum(nil)
 
-	user := &models.User{
+	user := &User{
 		Username: username,
 		Password: hex.EncodeToString(hashedPassword),
 		IsAdmin:  isAdmin,
@@ -35,29 +34,33 @@ func (r *UserRepository) Create(username string, password string, isAdmin bool) 
 	return user, nil
 }
 
-func (r *UserRepository) GetByID(id uint) (*models.User, error) {
-	var user models.User
+func (r *UserRepository) GetByID(id uint) (*User, error) {
+	var user User
 	result := r.db.Where("id = ?", id).First(&user)
 	return &user, result.Error
 }
 
-func (r *UserRepository) GetByUsername(username string) (*models.User, error) {
-	var user models.User
+func (r *UserRepository) GetByUsername(username string) (*User, error) {
+	var user User
 	result := r.db.Where("username = ?", username).First(&user)
 	return &user, result.Error
 }
 
-func (r *UserRepository) Activate(user *models.User) error {
+func (r *UserRepository) Activate(user *User) error {
 	user.IsActive = true
 	return r.db.Save(user).Error
 }
 
-func (r *UserRepository) Deactivate(user *models.User) error {
+func (r *UserRepository) Deactivate(user *User) error {
 	user.IsActive = false
 	return r.db.Save(user).Error
 }
 
-func (r *UserRepository) MakeAdmin(user *models.User) error {
+func (r *UserRepository) MakeAdmin(user *User) error {
 	user.IsAdmin = true
 	return r.db.Save(user).Error
+}
+
+func (r *UserRepository) Migrate() error {
+	return r.db.AutoMigrate(&User{})
 }
