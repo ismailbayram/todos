@@ -1,5 +1,26 @@
 package main
 
-//func main() {
-//
-//}
+import (
+	"fmt"
+	"github.com/ismailbayram/todos/src/api"
+	"github.com/ismailbayram/todos/src/config"
+	"log"
+	"net/http"
+	"time"
+)
+
+func main() {
+	cfg := config.Init()
+
+	server := &http.Server{
+		Addr:         fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port),
+		WriteTimeout: time.Second * time.Duration(cfg.Server.Timeout),
+		ReadTimeout:  time.Second * time.Duration(cfg.Server.Timeout),
+		Handler:      api.NewRouter(),
+	}
+
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Fatalln(err)
+	}
+}

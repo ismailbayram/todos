@@ -8,6 +8,13 @@ import (
 type Configuration struct {
 	SecretKey string
 	Database  DatabaseConfiguration
+	Server    ServerConfiguration
+}
+
+type ServerConfiguration struct {
+	Host    string
+	Port    string
+	Timeout uint
 }
 
 type DatabaseConfiguration struct {
@@ -41,6 +48,11 @@ func getDefaultConfig() *Configuration {
 			Password: "123456",
 			Host:     "localhost",
 			Port:     "5432",
+		},
+		Server: ServerConfiguration{
+			Host:    "127.0.0.1",
+			Port:    "8000",
+			Timeout: 10,
 		},
 	}
 }
