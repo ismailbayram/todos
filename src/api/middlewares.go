@@ -26,14 +26,21 @@ func loggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func panicHandlerMiddleware(next http.Handler) http.Handler {
+func jsonRendererMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				log.Fatalln(err)
-			}
-		}()
+		w.Header().Set("Content-Type", "application/json")
 		next.ServeHTTP(w, r)
 	})
 }
+
+//func panicHandlerMiddleware(next http.Handler) http.Handler {
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		defer func() {
+//			if err := recover(); err != nil {
+//				w.WriteHeader(http.StatusInternalServerError)
+//				log.Fatalln(err)
+//			}
+//		}()
+//		next.ServeHTTP(w, r)
+//	})
+//}
