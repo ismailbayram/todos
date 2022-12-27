@@ -58,7 +58,7 @@ func getDefaultConfig() *Configuration {
 }
 
 func readConfiguration() {
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath("./src/config")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -66,8 +66,8 @@ func readConfiguration() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		if _, err := os.Stat("./config/config.yml"); os.IsNotExist(err) {
-			os.Create("./config/config.yml")
+		if _, err := os.Stat("./src/config/config.yml"); os.IsNotExist(err) {
+			os.Create("./src/config/config.yml")
 		} else {
 			panic(err)
 		}

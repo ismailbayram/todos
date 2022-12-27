@@ -19,6 +19,7 @@ func main() {
 		Handler:      api.NewRouter(),
 	}
 
+	log.Println(fmt.Sprintf("Listening on http://%s:%s", cfg.Server.Host, cfg.Server.Port))
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatalln(err)
