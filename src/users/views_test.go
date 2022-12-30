@@ -15,6 +15,7 @@ func (s *UserTestSuite) TestLoginView() {
 	assert.Nil(s.T(), err)
 
 	handler := LoginView(s.DB)
+	var payload map[string]any
 
 	// Wrong data scenario
 	reqBody, _ := json.Marshal(map[string]string{"wrong": "wrong"})
@@ -23,13 +24,12 @@ func (s *UserTestSuite) TestLoginView() {
 	handler.ServeHTTP(response, req)
 	assert.Equal(s.T(), http.StatusBadRequest, response.Code)
 	resp, _ := io.ReadAll(response.Body)
-	var payload map[string]any
 	err = json.Unmarshal(resp, &payload)
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(s.T(), payload["username"], "Username is required.")
-	assert.Equal(s.T(), payload["password"], "Password is required.")
+	assert.Equal(s.T(), payload["username"], "required")
+	assert.Equal(s.T(), payload["password"], "required")
 
 	// Wrong password scenario
 	reqBody, _ = json.Marshal(map[string]string{
