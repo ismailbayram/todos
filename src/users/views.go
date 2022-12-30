@@ -25,7 +25,7 @@ func LoginView(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		token, err := ur.CreateToken(user, "a")
+		token, err := ur.CreateToken(user)
 		if err != nil {
 			responseData["username"] = "Something went wrong, please try again."
 			api.RespondWithError(w, responseData)

@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -103,10 +104,11 @@ func (s *UserTestSuite) TestMakeAdmin() {
 }
 
 func (s *UserTestSuite) TestCreateToken() {
+	viper.Set("secretkey", s.Config.SecretKey)
 	ur := NewUserRepository(s.DB)
 	user, err := ur.Create("token", "123456", true)
 	assert.Nil(s.T(), err)
-	token, err := ur.CreateToken(user, s.Config.SecretKey)
+	token, err := ur.CreateToken(user)
 	assert.Nil(s.T(), err)
 
 	h := sha256.New()
@@ -119,7 +121,7 @@ func (s *UserTestSuite) TestGetByToken() {
 	ur := NewUserRepository(s.DB)
 	user, err := ur.Create("token", "123456", true)
 	assert.Nil(s.T(), err)
-	token, err := ur.CreateToken(user, s.Config.SecretKey)
+	token, err := ur.CreateToken(user)
 	assert.Nil(s.T(), err)
 
 	expectedUser, err := ur.GetByToken(token)

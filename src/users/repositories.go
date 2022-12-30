@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -69,9 +70,9 @@ func (r *UserRepository) MakeAdmin(user *User) error {
 	return r.db.Save(user).Error
 }
 
-func (r *UserRepository) CreateToken(user *User, secretKey string) (string, error) {
+func (r *UserRepository) CreateToken(user *User) (string, error) {
 	h := sha256.New()
-	h.Write([]byte(fmt.Sprintf("%s%s", "token", secretKey)))
+	h.Write([]byte(fmt.Sprintf("%s%s", "token", viper.GetString("secretkey"))))
 	token := hex.EncodeToString(h.Sum(nil))
 	user.Token = token
 	return token, r.db.Save(user).Error
