@@ -14,3 +14,8 @@ type User struct {
 	IsAdmin   bool      `gorm:"default:false;not null"`
 	Token     string
 }
+
+type LoginDTO struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

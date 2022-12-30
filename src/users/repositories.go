@@ -47,6 +47,13 @@ func (r *UserRepository) GetByUsername(username string) (*User, error) {
 	return &user, result.Error
 }
 
+func (r *UserRepository) CheckUserPassword(user *User, password string) bool {
+	h := sha256.New()
+	h.Write([]byte(password))
+	hashedPassword := h.Sum(nil)
+	return user.Password == hex.EncodeToString(hashedPassword)
+}
+
 func (r *UserRepository) Activate(user *User) error {
 	user.IsActive = true
 	return r.db.Save(user).Error
