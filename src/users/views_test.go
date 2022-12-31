@@ -2,7 +2,9 @@ package users
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -62,4 +64,105 @@ func (s *UserTestSuite) TestLoginView() {
 		panic(err)
 	}
 	assert.NotNil(s.T(), payload["token"])
+}
+
+func (s *UserTestSuite) TestUserListView() {
+	ur := NewUserRepository(s.DB)
+	admin, _ := ur.Create("ismail", "123456", true)
+	hilal, _ := ur.Create("hilal", "123456", true)
+	fatih, _ := ur.Create("fatih", "123456", false)
+	ur.Deactivate(fatih)
+
+	token, _ := ur.CreateToken(admin)
+
+	handler := UserListView(s.DB)
+	var payload struct {
+		Count   int
+		Results []UserDTO
+	}
+	ctx := context.Background()
+
+	// without token
+	ctx = context.WithValue(ctx, "user", nil)
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, "/api/users/", nil)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusUnauthorized, response.Code)
+
+	// with unprivileged user's token
+	ctx = context.WithValue(ctx, "user", fatih)
+	req, _ = http.NewRequestWithContext(ctx, http.MethodGet, "/api/users/", nil)
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusForbidden, response.Code)
+
+	// with token
+	ctx = context.WithValue(ctx, "user", admin)
+	req, _ = http.NewRequestWithContext(ctx, http.MethodGet, "/api/users/", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusOK, response.Code)
+	resp, _ := io.ReadAll(response.Body)
+	json.Unmarshal(resp, &payload)
+
+	assert.Equal(s.T(), 3, payload.Count)
+	assert.Equal(s.T(), admin.ID, payload.Results[0].ID)
+	assert.Equal(s.T(), admin.Username, payload.Results[0].Username)
+
+	assert.Equal(s.T(), hilal.ID, payload.Results[1].ID)
+	assert.Equal(s.T(), hilal.Username, payload.Results[1].Username)
+
+	assert.Equal(s.T(), fatih.ID, payload.Results[2].ID)
+	assert.Equal(s.T(), fatih.Username, payload.Results[2].Username)
+
+	// filtering by ID
+	req, _ = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("/api/users/?id=%d", admin.ID), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusOK, response.Code)
+	resp, _ = io.ReadAll(response.Body)
+	json.Unmarshal(resp, &payload)
+	assert.Equal(s.T(), 1, payload.Count)
+	assert.Equal(s.T(), admin.ID, payload.Results[0].ID)
+	assert.Equal(s.T(), admin.Username, payload.Results[0].Username)
+
+	// filtering by is_admin
+	req, _ = http.NewRequestWithContext(ctx, http.MethodGet, "/api/users/?is_admin=true", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusOK, response.Code)
+	resp, _ = io.ReadAll(response.Body)
+	json.Unmarshal(resp, &payload)
+	assert.Equal(s.T(), 2, payload.Count)
+	assert.Equal(s.T(), admin.ID, payload.Results[0].ID)
+	assert.Equal(s.T(), admin.Username, payload.Results[0].Username)
+	assert.Equal(s.T(), hilal.ID, payload.Results[1].ID)
+	assert.Equal(s.T(), hilal.Username, payload.Results[1].Username)
+
+	// filtering by is_active
+	req, _ = http.NewRequestWithContext(ctx, http.MethodGet, "/api/users/?is_active=false", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusOK, response.Code)
+	resp, _ = io.ReadAll(response.Body)
+	json.Unmarshal(resp, &payload)
+	assert.Equal(s.T(), 1, payload.Count)
+	assert.Equal(s.T(), fatih.ID, payload.Results[0].ID)
+	assert.Equal(s.T(), fatih.Username, payload.Results[0].Username)
+
+	// filtering by is_admin and id
+	req, _ = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("/api/users/?is_admin=true&id=%d", admin.ID), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, req)
+	assert.Equal(s.T(), http.StatusOK, response.Code)
+	resp, _ = io.ReadAll(response.Body)
+	json.Unmarshal(resp, &payload)
+	assert.Equal(s.T(), 1, payload.Count)
+	assert.Equal(s.T(), admin.ID, payload.Results[0].ID)
+	assert.Equal(s.T(), admin.Username, payload.Results[0].Username)
 }

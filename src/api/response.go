@@ -7,9 +7,9 @@ import (
 
 type ResponseData map[string]any
 
-func RespondWithError(w http.ResponseWriter, resp ResponseData) {
+func RespondWithError(w http.ResponseWriter, resp ResponseData, code int) {
 	response, _ := json.Marshal(resp)
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(code)
 	w.Write(response)
 }
 

@@ -83,3 +83,10 @@ func (r *UserRepository) GetByToken(token string) (*User, error) {
 	result := r.db.Where("token = ?", token).First(&user)
 	return &user, result.Error
 }
+
+func (r *UserRepository) All(filters map[string]interface{}) ([]User, error) {
+	users := []User{}
+	//db.Where(&User{Name: "jinzhu", Age: 20})
+	result := r.db.Order("id asc").Where(filters).Find(&users)
+	return users, result.Error
+}
