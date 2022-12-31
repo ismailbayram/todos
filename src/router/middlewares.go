@@ -1,8 +1,10 @@
 package router
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ismailbayram/todos/src/users"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -49,7 +51,15 @@ func jsonMiddleware(next http.Handler) http.Handler {
 func authenticationMiddleware(db *gorm.DB) func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			next.ServeHTTP(w, r)
+			ctx := r.Context()
+			ctx = context.WithValue(ctx, "user", nil)
+
+			ur := users.NewUserRepository(db)
+			user, err := ur.GetByToken(r.Header.Get("Authorization"))
+			if err == nil {
+				ctx = context.WithValue(ctx, "user", user)
+			}
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }

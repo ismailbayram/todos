@@ -72,7 +72,7 @@ func (r *UserRepository) MakeAdmin(user *User) error {
 
 func (r *UserRepository) CreateToken(user *User) (string, error) {
 	h := sha256.New()
-	h.Write([]byte(fmt.Sprintf("%s%s", "token", viper.GetString("secretkey"))))
+	h.Write([]byte(fmt.Sprintf("%s%s", user.Username, viper.GetString("secretkey"))))
 	token := hex.EncodeToString(h.Sum(nil))
 	user.Token = token
 	return token, r.db.Save(user).Error
