@@ -1,6 +1,9 @@
-package users
+package api
 
-import "time"
+import (
+	"github.com/ismailbayram/todos/src/users"
+	"time"
+)
 
 type LoginDTO struct {
 	Username string `validate:"required"`
@@ -16,7 +19,7 @@ type UserDTO struct {
 	IsAdmin   bool      `json:"is_admin"`
 }
 
-func ToUserDTO(user *User) UserDTO {
+func ToUserDTO(user *users.User) UserDTO {
 	return UserDTO{
 		ID:        user.ID,
 		Username:  user.Username,

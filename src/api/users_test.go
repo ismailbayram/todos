@@ -1,18 +1,19 @@
-package users
+package api
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ismailbayram/todos/src/users"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 )
 
-func (s *UserTestSuite) TestLoginView() {
-	ur := NewUserRepository(s.DB)
+func (s *APITestSuite) TestLoginView() {
+	ur := users.NewUserRepository(s.DB)
 	user, err := ur.Create("hilal", "123456", true)
 	assert.Nil(s.T(), err)
 
@@ -66,8 +67,8 @@ func (s *UserTestSuite) TestLoginView() {
 	assert.NotNil(s.T(), payload["token"])
 }
 
-func (s *UserTestSuite) TestUserListView() {
-	ur := NewUserRepository(s.DB)
+func (s *APITestSuite) TestUserListView() {
+	ur := users.NewUserRepository(s.DB)
 	admin, _ := ur.Create("ismail", "123456", true)
 	hilal, _ := ur.Create("hilal", "123456", true)
 	fatih, _ := ur.Create("fatih", "123456", false)
