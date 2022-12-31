@@ -13,7 +13,7 @@ func LoginView(db *gorm.DB) http.HandlerFunc {
 
 		errors := ValidateRequestData(r.Body, &loginDTO)
 		if errors != nil {
-			RespondWithError(w, errors, http.StatusBadRequest)
+			Respond(w, errors, http.StatusBadRequest)
 			return
 		}
 
@@ -21,19 +21,19 @@ func LoginView(db *gorm.DB) http.HandlerFunc {
 		user, err := ur.GetByUsername(loginDTO.Username)
 		if err != nil || !ur.CheckUserPassword(user, loginDTO.Password) {
 			responseData["username"] = "Incorrect username or password."
-			RespondWithError(w, responseData, http.StatusBadRequest)
+			Respond(w, responseData, http.StatusBadRequest)
 			return
 		}
 
 		token, err := ur.CreateToken(user)
 		if err != nil {
 			responseData["username"] = "Something went wrong, please try again."
-			RespondWithError(w, responseData, http.StatusInternalServerError)
+			Respond(w, responseData, http.StatusInternalServerError)
 			return
 		}
 
 		responseData["token"] = token
-		RespondWithSuccess(w, responseData)
+		Respond(w, responseData, http.StatusOK)
 	}
 }
 
@@ -55,7 +55,7 @@ func UserListView(db *gorm.DB) http.HandlerFunc {
 
 		if err != nil {
 			responseData["error"] = "An error has been occured, please try again."
-			RespondWithError(w, responseData, http.StatusInternalServerError)
+			Respond(w, responseData, http.StatusInternalServerError)
 			return
 		}
 		count := len(userList)
@@ -64,6 +64,6 @@ func UserListView(db *gorm.DB) http.HandlerFunc {
 		for i, user := range userList {
 			responseData["results"].([]UserDTO)[i] = ToUserDTO(&user)
 		}
-		RespondWithSuccess(w, responseData)
+		Respond(w, responseData, http.StatusOK)
 	}
 }

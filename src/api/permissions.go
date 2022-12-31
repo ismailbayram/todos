@@ -9,7 +9,7 @@ import (
 func IsAuthorized(w http.ResponseWriter, ctx context.Context) bool {
 	requestUser := ctx.Value("user")
 	if requestUser == nil {
-		RespondWithError(w, nil, http.StatusUnauthorized)
+		Respond(w, nil, http.StatusUnauthorized)
 		return false
 	}
 	return true
@@ -18,7 +18,7 @@ func IsAuthorized(w http.ResponseWriter, ctx context.Context) bool {
 func IsAdmin(w http.ResponseWriter, ctx context.Context) bool {
 	requestUser := ctx.Value("user")
 	if !requestUser.(*users.User).IsAdmin {
-		RespondWithError(w, nil, http.StatusForbidden)
+		Respond(w, nil, http.StatusForbidden)
 		return false
 	}
 	return true
