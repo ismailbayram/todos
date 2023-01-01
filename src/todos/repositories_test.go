@@ -37,7 +37,10 @@ func (s *ToDoTestSuite) TestMakeDone() {
 	assert.Nil(s.T(), err)
 	assert.False(s.T(), toDo.IsDone)
 
-	err = tdr.MakeDone(toDo)
+	toDo.IsDone = true
+	toDo.Name = "New Name"
+	err = tdr.Update(toDo)
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), toDo.IsDone)
+	assert.Equal(s.T(), "New Name", toDo.Name)
 }
