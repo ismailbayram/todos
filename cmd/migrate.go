@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ismailbayram/todos/src/config"
 	"github.com/ismailbayram/todos/src/database"
+	"github.com/ismailbayram/todos/src/todos"
 	"github.com/ismailbayram/todos/src/users"
 	"log"
 )
@@ -10,7 +11,7 @@ import (
 func main() {
 	cfg := config.Init()
 	db := database.New(&cfg.Database)
-	models := []interface{}{users.User{}}
+	models := []interface{}{users.User{}, todos.ToDo{}}
 	db.Migrate(models)
 
 	db = database.New(&cfg.Database)
