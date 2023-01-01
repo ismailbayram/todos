@@ -15,6 +15,7 @@ func NewRouter(db *gorm.DB) *mux.Router {
 
 	router.HandleFunc("/login/", api.LoginView(db)).Methods(http.MethodPost)
 	router.HandleFunc("/users/", api.UserListView(db)).Methods(http.MethodGet)
+	router.HandleFunc("/users/", api.UserCreateView(db)).Methods(http.MethodPost)
 
 	//router.NotFoundHandler = router.NewRoute().HandlerFunc(http.NotFound).GetHandler()
 
