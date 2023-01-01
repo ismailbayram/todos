@@ -29,3 +29,9 @@ func ToUserDTO(user *users.User) UserDTO {
 		IsAdmin:   user.IsAdmin,
 	}
 }
+
+type UserCreateDTO struct {
+	Username string `validate:"required"`
+	Password string `validate:"required"`
+	IsAdmin  *bool  `validate:"required" json:"is_admin"`
+}

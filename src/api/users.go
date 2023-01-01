@@ -67,3 +67,38 @@ func UserListView(db *gorm.DB) http.HandlerFunc {
 		Respond(w, responseData, http.StatusOK)
 	}
 }
+
+func UserCreateView(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !IsAuthorized(w, r.Context()) {
+			return
+		}
+		if !IsAdmin(w, r.Context()) {
+			return
+		}
+		responseData := make(ResponseData)
+		var userCreateDTO UserCreateDTO
+
+		errors := ValidateRequestData(r.Body, &userCreateDTO)
+		if errors != nil {
+			Respond(w, errors, http.StatusBadRequest)
+			return
+		}
+
+		ur := users.NewUserRepository(db)
+		_, err := ur.GetByUsername(userCreateDTO.Username)
+		if err == nil {
+			responseData["username"] = "There is already a user registered with this username."
+			Respond(w, responseData, http.StatusBadRequest)
+			return
+		}
+
+		_, err = ur.Create(userCreateDTO.Username, userCreateDTO.Password, *userCreateDTO.IsAdmin)
+		if err != nil {
+			responseData["username"] = "Something went wrong, please try again."
+			Respond(w, responseData, http.StatusInternalServerError)
+			return
+		}
+		Respond(w, responseData, http.StatusCreated)
+	}
+}

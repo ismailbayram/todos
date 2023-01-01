@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"io"
 	"log"
+	"reflect"
 	"strings"
 )
 
@@ -21,9 +22,18 @@ func ValidateRequestData(data io.ReadCloser, s any) ResponseData {
 	errors := make(ResponseData)
 	if err := requestDataValidator.Struct(s); err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			errors[strings.ToLower(err.Field())] = err.Tag()
+			errors[getFieldName(s, err)] = err.Tag()
 		}
 		return errors
 	}
 	return nil
+}
+
+func getFieldName(s any, err validator.FieldError) string {
+	field, _ := reflect.TypeOf(s).Elem().FieldByName(err.Field())
+	fieldName := field.Tag.Get("json")
+	if fieldName == "" {
+		fieldName = strings.ToLower(err.Field())
+	}
+	return fieldName
 }
