@@ -1,0 +1,11 @@
+secretkey: "TOP_SECRET",
+database:
+    name:     "todos",
+    username: "postgres",
+    password: "123456",
+    host:     "localhost",
+    port:     "5432",
+server:
+    host:    "127.0.0.1",
+    port:    "8000",
+    timeout: 10,
