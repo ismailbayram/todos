@@ -20,7 +20,7 @@ func main() {
 		Handler:      router.NewRouter(database.New(&cfg.Database).Conn),
 	}
 
-	log.Println(fmt.Sprintf("Listening on http://%s:%s", cfg.Server.Host, cfg.Server.Port))
+	log.Println(fmt.Sprintf("Listening on http://127.0.0.1:%s", cfg.Server.Port))
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatalln(err)

@@ -12,7 +12,6 @@ type Configuration struct {
 }
 
 type ServerConfiguration struct {
-	Host    string
 	Port    string
 	Timeout uint
 }
@@ -48,7 +47,6 @@ func getDefaultConfig() *Configuration {
 			Port:     "5432",
 		},
 		Server: ServerConfiguration{
-			Host:    "127.0.0.1",
 			Port:    "8000",
 			Timeout: 10,
 		},
@@ -74,4 +72,10 @@ func readConfiguration() {
 
 func bindEnvs() {
 	viper.BindEnv("database.host", "DB_HOST")
+	viper.BindEnv("database.port", "DB_PORT")
+	viper.BindEnv("database.name", "DB_NAME")
+	viper.BindEnv("database.username", "DB_USER")
+	viper.BindEnv("database.password", "DB_PASSWORD")
+
+	viper.BindEnv("server.port", "SW_PORT")
 }

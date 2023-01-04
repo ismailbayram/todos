@@ -34,3 +34,8 @@ services:
       - $HOME/docker/volumes/todos-app:/app/config
     environment:
       DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+      DB_NAME: todos
+      SW_PORT: 8000
