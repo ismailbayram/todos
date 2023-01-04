@@ -34,8 +34,6 @@ func Init() *Configuration {
 		panic(err)
 	}
 
-	// TODO: bindEnvs()
-
 	return config
 }
 
@@ -58,23 +56,22 @@ func getDefaultConfig() *Configuration {
 }
 
 func readConfiguration() {
-	viper.AddConfigPath("./src/config")
+	viper.AddConfigPath("./config")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
+
+	bindEnvs()
 
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		if _, err := os.Stat("./src/config/config.yml"); os.IsNotExist(err) {
-			os.Create("./src/config/config.yml")
-		} else {
-			panic(err)
+		if _, err := os.Stat("./config/config.yml"); os.IsNotExist(err) {
+			os.Create("./config/config.yml")
 		}
 	}
 }
 
-//func bindEnvs() {
-//	viper.BindEnv("database.host", "DB_HOST")
-//	viper.BindEnv("database.username", "DB_USER")
-//}
+func bindEnvs() {
+	viper.BindEnv("database.host", "DB_HOST")
+}

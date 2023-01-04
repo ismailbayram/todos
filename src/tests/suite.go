@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"github.com/ismailbayram/todos/src/config"
+	"github.com/ismailbayram/todos/config"
 	"github.com/ismailbayram/todos/src/database"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"

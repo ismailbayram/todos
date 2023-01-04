@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ismailbayram/todos/src/config"
+	"github.com/ismailbayram/todos/config"
 	"github.com/ismailbayram/todos/src/database"
 	"github.com/ismailbayram/todos/src/todos"
 	"github.com/ismailbayram/todos/src/users"

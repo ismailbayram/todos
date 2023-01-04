@@ -1,0 +1,36 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: on-failure
+    environment:
+      - POSTGRES_DB=todos
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+    ports:
+      - 5433:5432
+    volumes:
+      - $HOME/docker/volumes/todos-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  todos:
+    container_name: todos
+    image: todos:latest
+    restart: always
+    build:
+      context: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 8000:8000
+    volumes:
+      - $HOME/docker/volumes/todos-app:/app/config
+    environment:
+      DB_HOST: postgres

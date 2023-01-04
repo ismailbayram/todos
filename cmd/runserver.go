@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/ismailbayram/todos/src/config"
+	"github.com/ismailbayram/todos/config"
 	"github.com/ismailbayram/todos/src/database"
 	"github.com/ismailbayram/todos/src/router"
 	"log"
@@ -14,7 +14,7 @@ func main() {
 	cfg := config.Init()
 
 	server := &http.Server{
-		Addr:         fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port),
+		Addr:         fmt.Sprintf(":%s", cfg.Server.Port),
 		WriteTimeout: time.Second * time.Duration(cfg.Server.Timeout),
 		ReadTimeout:  time.Second * time.Duration(cfg.Server.Timeout),
 		Handler:      router.NewRouter(database.New(&cfg.Database).Conn),
